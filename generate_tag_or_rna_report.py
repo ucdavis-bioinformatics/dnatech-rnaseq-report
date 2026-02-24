@@ -99,8 +99,8 @@ if tag_or_rna == "rna":
 print("Submitting slurm array script for all samples...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
-        print(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} {outputdir}/rnaseq_pe_mouse_human.slurm {outputdir}/sample_data.txt {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta}")
+        print(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm sample_data.txt {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta}")
         #os.system(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} {outputdir}/rnaseq_pe_mouse_human.slurm {outputdir}/sample_data.txt {outputdir} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta}")
-        subprocess.run(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} {outputdir}/rnaseq_pe_mouse_human.slurm {outputdir}/sample_data.txt {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta}", shell=True)
+        subprocess.run(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm sample_data.txt {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta}", shell=True)
 
 print("Done submitting. Now you must wait.")
