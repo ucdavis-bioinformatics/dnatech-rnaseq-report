@@ -9,6 +9,9 @@ import sys
 
 readline.set_completer_delims(' \t\n=')
 readline.parse_and_bind("tab:complete")
+
+tag_or_rna = input("RNA-Seq or TAG-Seq (rna/tag)? ")
+
 inputdir = input("Path to fastq file directory: ")
 input_files = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*.fastq.gz', f)]
 input_files.sort()
@@ -28,8 +31,32 @@ if sampidcheck != "y" and sampidcheck != "Y":
     sys.exit(1)
 
 outputdir = input("\nPath to output directory: ")
-star_ref = input("\nPath to STAR reference directory: ")
-star_gtf = input("\nPath to STAR annotation file (GTF format): ")
+
+
+mhcheck = input("\nDo you want to use the mouse/human reference or not (mouse/human/n)? ")
+
+star_ref=""
+star_gtf=""
+if mhcheck=="mouse" or mhcheck=="human":
+    if mhcheck=="mouse":
+        pass
+    elif mhcheck=="human":
+        pass
+else:
+    star_ref = input("\nPath to reference fasta file: ")
+    star_gtf = input("\nPath to annotation file (GTF format): ")
+
+
+rrna_check = input("Find rRNA count (y/n)? ")
+rrna_fasta=""
+if (rrna_check == "y" or rrna_check == "Y")
+    if (mhcheck != "mouse" and mhcheck != "human"):
+        rrna_fasta = input("Path to rRNA FASTA file: ")
+    elif mhcheck == "human":
+        rrna_fasta = ""
+    elif mhcheck == "mouse":
+        rrna_fasta = ""
+
 
 runcheck = input("\nRun (y/n)? ")
 if runcheck != "y" and runcheck != "Y":
