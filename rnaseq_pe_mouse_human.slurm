@@ -13,7 +13,7 @@
 
 hostname
 sampfile=$1
-starref=$3
+starref=$2
 stargtf=$3
 dorrna=$4
 rrnafile=$5
@@ -24,6 +24,8 @@ R1=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f2`
 R2=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f3`
 
 echo "Sample: $SAMPLE"
+
+source /etc/profile.d/modules.sh
 
 ############### fastqc
 start=`date +%s`
@@ -98,7 +100,7 @@ mkdir -p $stardir/$SAMPLE
 CLEANED_R1="01-HTStream/$SAMPLE/$SAMPLE.cleaned_R1.fastq.gz"
 CLEANED_R2="01-HTStream/$SAMPLE/$SAMPLE.cleaned_R2.fastq.gz"
 
-module load star/2.7.11b
+module load star/2.7.11a
 
 call="STAR --runThreadN 10 \
 --genomeDir $starref \
