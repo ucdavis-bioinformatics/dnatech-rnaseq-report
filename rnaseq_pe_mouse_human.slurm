@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=hts_star # Job name
+#SBATCH --job-name=rnaseq_mh # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
 #SBATCH --time=3-0
@@ -25,7 +25,7 @@ SAMPLE=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f1`
 R1=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f2`
 R2=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f3`
 
-echo $SAMPLE
+echo "Sample: $SAMPLE"
 
 ############### fastqc
 start=`date +%s`
@@ -37,7 +37,7 @@ echo "Running FastQC..."
 
 module load fastqc/0.12.1
 
-call="fastqc -o $fastqcdir/$SAMPLE $R1 $R2"
+call="fastqc --threads 10 -o $fastqcdir/$SAMPLE $R1 $R2"
 echo $call
 eval $call
 
@@ -59,12 +59,24 @@ mkdir -p $htsdir/$SAMPLE
 
 module load htstream/1.4.1
 
-call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.log -1 $R1 -2 $R2 | \
+if [ $dorrna == "y" ]; then
+
+    call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.log -1 $R1 -2 $R2 | \
+      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
+      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.log -s $rrnafile | \
+      hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
+      hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
+      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
+      hts_Stats -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
+else
+
+    call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.log -1 $R1 -2 $R2 | \
       hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_Stats -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
+fi
 
 echo $call
 eval $call
@@ -107,3 +119,6 @@ eval $call
 end=`date +%s`
 runtime=$((end-start))
 echo STAR Runtime: $runtime seconds
+
+module unload star
+##################################

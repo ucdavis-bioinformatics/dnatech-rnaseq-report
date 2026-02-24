@@ -35,15 +35,16 @@ outputdir = input("\nPath to output directory: ")
 
 mhcheck = input("\nDo you want to use the mouse/human reference or not (mouse/human/n)? ")
 
-star_ref=""
+star_ref_dir=""
 star_gtf=""
+star_fasta=""
 if mhcheck=="mouse" or mhcheck=="human":
     if mhcheck=="mouse":
         pass
     elif mhcheck=="human":
         pass
 else:
-    star_ref = input("\nPath to reference fasta file: ")
+    star_fasta = input("\nPath to reference fasta file: ")
     star_gtf = input("\nPath to annotation file (GTF format): ")
 
 
@@ -69,7 +70,9 @@ if not os.path.exists(outputdir):
     os.system(f"mkdir -p {outputdir}")
 
 print("Copying slurm script...")
-os.system(f"cp hts_star.slurm {outputdir}")
+if tag_or_rna == "rna":
+    if mhcheck=="mouse" or mhcheck=="human":
+        os.system(f"cp rnaseq_pe_mouse_human.slurm {outputdir}")
 
 print("Creating sample info file...")
 
