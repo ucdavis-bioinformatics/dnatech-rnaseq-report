@@ -1,5 +1,5 @@
-STAR_REF_HUMAN_DIR="/share/bioinfo/genomes/human/GRCh38.p14/STAR_2.7.11b_gencodev48"
-STAR_GTF_HUMAN_FILE="/share/bioinfo/genomes/human/GRCh38.p14/gencode.v48.primary_assembly.basic.annotation.gtf"
+STAR_REF_HUMAN_DIR="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/STAR_2.7.11b_index"
+STAR_GTF_HUMAN_FILE="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf"
 RRNA_HUMAN_FILE=""
 
 STAR_REF_MOUSE_DIR=""

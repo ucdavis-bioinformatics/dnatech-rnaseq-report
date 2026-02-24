@@ -1,24 +1,22 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 #SBATCH --job-name=rnaseq_mh # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
 #SBATCH --time=3-0
 #SBATCH --mem=50000 # Memory pool for all cores (see also --mem-per-cpu)
-#SBATCH --partition=production
+#SBATCH --partition=low
+#SBATCH --account=publicgrp
+#SBATCH --output=slurmout/rnaseq_mh_%A_%a.out
+#SBATCH --error=slurmout/rnaseq_mh_%A_%a.out
 
 
 hostname
 sampfile=$1
-outdir=$2
 starref=$3
-stargtf=$4
-dorrna=$5
-rrnafile=$6
-
-if [ ! -e $outdir ]; then
-    mkdir $outdir
-fi
+stargtf=$3
+dorrna=$4
+rrnafile=$5
 
 
 SAMPLE=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f1`
@@ -30,7 +28,7 @@ echo "Sample: $SAMPLE"
 ############### fastqc
 start=`date +%s`
 
-fastqcdir="$outdir/00-FastQC"
+fastqcdir="00-FastQC"
 mkdir -p $fastqcdir/$SAMPLE
 
 echo "Running FastQC..."
@@ -54,10 +52,10 @@ start=`date +%s`
 
 echo "Running HTStream..."
 
-htsdir="$outdir/01-HTStream"
+htsdir="01-HTStream"
 mkdir -p $htsdir/$SAMPLE
 
-module load htstream/1.4.1
+module load htstream/1.3.3
 
 if [ $dorrna == "y" ]; then
 
@@ -94,9 +92,8 @@ start=`date +%s`
 
 echo "Running STAR..."
 
-stardir="$outdir/02-STAR"
+stardir="02-STAR"
 mkdir -p $stardir/$SAMPLE
-sampfile="sample_data.txt"
 
 CLEANED_R1="01-HTStream/$SAMPLE/$SAMPLE.cleaned_R1.fastq.gz"
 CLEANED_R2="01-HTStream/$SAMPLE/$SAMPLE.cleaned_R2.fastq.gz"
