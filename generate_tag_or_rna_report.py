@@ -6,6 +6,19 @@ import readline
 import os
 import re
 import sys
+from config import *
+
+hm_data = {"human" : {"star_ref_dir" : STAR_REF_HUMAN_DIR,
+                      "star_gtf" : STAR_GTF_HUMAN_FILE,
+                      "rrna_file" : RRNA_HUMAN_FILE
+            },
+
+           "mouse" : {"star_ref_dir" : STAR_REF_MOUSE_DIR,
+                      "star_gtf" : STAR_GTF_MOUSE_FILE,
+                      "rrna_file" : RRNA_MOUSE_FILE
+            }
+} 
+
 
 readline.set_completer_delims(' \t\n=')
 readline.parse_and_bind("tab:complete")
@@ -39,10 +52,8 @@ star_ref_dir=""
 star_gtf=""
 star_fasta=""
 if mhcheck=="mouse" or mhcheck=="human":
-    if mhcheck=="mouse":
-        pass
-    elif mhcheck=="human":
-        pass
+    star_ref_dir = hm_data[mhcheck]["star_ref_dir"]
+    star_gtf = hm_data[mhcheck]["star_gtf"]
 else:
     star_fasta = input("\nPath to reference fasta file: ")
     star_gtf = input("\nPath to annotation file (GTF format): ")
@@ -50,13 +61,11 @@ else:
 
 rrna_check = input("Find rRNA count (y/n)? ")
 rrna_fasta=""
-if (rrna_check == "y" or rrna_check == "Y")
-    if (mhcheck != "mouse" and mhcheck != "human"):
+if (rrna_check == "y" or rrna_check == "Y"):
+    if (mhcheck == "mouse" or mhcheck == "human"):
+        rrna_fasta = hm_data[mhcheck]["rrna_file"]
+    else:
         rrna_fasta = input("Path to rRNA FASTA file: ")
-    elif mhcheck == "human":
-        rrna_fasta = ""
-    elif mhcheck == "mouse":
-        rrna_fasta = ""
 
 
 runcheck = input("\nRun (y/n)? ")
