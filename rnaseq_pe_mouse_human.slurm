@@ -17,6 +17,10 @@ starref=$2
 stargtf=$3
 dorrna=$4
 rrnafile=$5
+fastqcdir=$6
+htsdir=$7
+stardir=$8
+picarddir=$9
 
 
 SAMPLE=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f1`
@@ -30,14 +34,13 @@ source /etc/profile.d/modules.sh
 ############### fastqc
 start=`date +%s`
 
-fastqcdir="00-FastQC"
 mkdir -p $fastqcdir/$SAMPLE
 
 echo "Running FastQC..."
 
 module load fastqc/0.12.1
 
-call="fastqc --threads 10 -o $fastqcdir/$SAMPLE $R1 $R2"
+call="fastqc --threads $SLURM_CPUS_PER_TASK -o $fastqcdir/$SAMPLE $R1 $R2"
 echo $call
 eval $call
 
@@ -54,7 +57,6 @@ start=`date +%s`
 
 echo "Running HTStream..."
 
-htsdir="01-HTStream"
 mkdir -p $htsdir/$SAMPLE
 
 module load htstream/1.3.3
@@ -94,15 +96,14 @@ start=`date +%s`
 
 echo "Running STAR..."
 
-stardir="02-STAR"
 mkdir -p $stardir/$SAMPLE
 
-CLEANED_R1="01-HTStream/$SAMPLE/$SAMPLE.cleaned_R1.fastq.gz"
-CLEANED_R2="01-HTStream/$SAMPLE/$SAMPLE.cleaned_R2.fastq.gz"
+CLEANED_R1="$htsdir/$SAMPLE/$SAMPLE.cleaned_R1.fastq.gz"
+CLEANED_R2="$htsdir/$SAMPLE/$SAMPLE.cleaned_R2.fastq.gz"
 
 module load star/2.7.11a
 
-call="STAR --runThreadN 10 \
+call="STAR --runThreadN $SLURM_CPUS_PER_TASK \
 --genomeDir $starref \
 --sjdbGTFtagExonParentGene gene_id \
 --sjdbGTFfile $stargtf \
@@ -121,3 +122,34 @@ echo STAR Runtime: $runtime seconds
 
 module unload star
 ##################################
+
+
+##################### picard (remove duplicates)
+start=`date +%s`
+
+echo "Running picard (removing duplicates)..."
+
+mkdir -p $picarddir/$SAMPLE
+
+BAMFILE="$stardir/$SAMPLE/${SAMPLE}.paired.Aligned.sortedByCoord.out.bam"
+
+module load picard/3.1.1
+
+call="picard MarkDuplicates --REMOVE_DUPLICATES true --INPUT $BAMFILE --METRICS_FILE $picarddir/$SAMPLE/$SAMPLE.picard.metrics --OUTPUT $picarddir/$SAMPLE/$SAMPLE.remdup.bam"
+
+echo $call
+eval $call
+
+module load samtools/1.19.2
+call="samtools index --threads $SLURM_CPUS_PER_TASK $picarddir/$SAMPLE/$SAMPLE.remdup.bam"
+echo $call
+eval $call
+
+end=`date +%s`
+runtime=$((end-start))
+echo Picard Runtime: $runtime seconds
+
+module unload samtools
+module unload picard
+##################################
+

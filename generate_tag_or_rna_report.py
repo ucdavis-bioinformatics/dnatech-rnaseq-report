@@ -66,7 +66,7 @@ else:
 
 
 rrna_check = input("Find rRNA count (y/n)? ")
-rrna_fasta=""
+rrna_fasta="NA"
 if (rrna_check == "y" or rrna_check == "Y"):
     if (mhcheck == "mouse" or mhcheck == "human"):
         rrna_fasta = hm_data[mhcheck]["rrna_file"]
@@ -85,10 +85,10 @@ if not os.path.exists(outputdir):
     os.system(f"mkdir -p {outputdir}")
     os.system(f"mkdir -p {outputdir}/slurmout")
 
-print("Copying slurm script...")
+print("Copying slurm scripts...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
-        os.system(f"cp rnaseq_pe_mouse_human.slurm {outputdir}")
+        os.system(f"cp rnaseq_pe_mouse_human.slurm htseq.slurm {outputdir}")
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
@@ -96,11 +96,20 @@ if tag_or_rna == "rna":
         for index, sampid in enumerate(sample_ids):
             file.write(f"{sampid}\t{inputdir}/{input_files_R1[index]}\t{inputdir}/{input_files_R2[index]}\n")
 
+os.chdir(outputdir)
+
 print("Submitting slurm array script for all samples...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
-        print(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm sample_data.txt {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta}")
-        #os.system(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} {outputdir}/rnaseq_pe_mouse_human.slurm {outputdir}/sample_data.txt {outputdir} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta}")
-        subprocess.run(f"cd {outputdir}; sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm sample_data.txt {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta}", shell=True)
+        print(f"sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTQC_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
+        sbatch_output = subprocess.run(f"sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTQC_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
+
+        #print(sbatch_output.stdout)
+        batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
+        print(f"Array Job ID: {batch_jobid}")
+
+        # submit htseq-count job to run after array job finishes
+        subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq.slurm {SAMPLE_FILE} {STAR_DIR} {star_gtf} {PICARD_DIR}", shell=True)
+
 
 print("Done submitting. Now you must wait.")
