@@ -92,7 +92,7 @@ if tag_or_rna == "rna":
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
-    with open(f"{outputdir}/sample_data.txt", 'w') as file:
+    with open(f"{outputdir}/{SAMPLE_FILE}", 'w') as file:
         for index, sampid in enumerate(sample_ids):
             file.write(f"{sampid}\t{inputdir}/{input_files_R1[index]}\t{inputdir}/{input_files_R2[index]}\n")
 
