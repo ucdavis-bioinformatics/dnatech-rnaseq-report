@@ -29,13 +29,13 @@ echo "Running htseq-count..."
 SAMPLE=`head -n 1 $sampfile | tail -1 | cut -f1`
 
 # find strandedness using STAR output
-stranded=`tail -n +5 $stardir/$SAMPLE/$SAMPLE.paired.ReadsPerGene.out.tab | perl -ane '$u+=$F[1]; $f+=$F[2]; $r+=$F[3]; }{ if ($u>$f && $u>$r) {print "no";} elsif ($f>$u && $f>$r) {print "yes";} elsif ($r>$u && $r>$f) {print "reverse";}'`
+stranded=`tail -n +5 $stardir/$SAMPLE/$SAMPLE.paired.ReadsPerGene.out.tab | perl -ane '$u+=$F[1]; $f+=$F[2]; $r+=$F[3]; }{ if ($u>$f && $u>$r) {print "no";} elsif ($f>$u && $f>$r) {print "yes";} elsif ($r>$u && $r>$f) {print "reverse";} else {print "ERROR WITH STRAND CALC";}'`
 
 echo "Is it stranded? $stranded"
 
 module load htseq/2.0.3
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK -r pos -s $stranded -c htseq.ALL.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
+call="htseq-count -n $SLURM_CPUS_PER_TASK --with-header -r pos -s $stranded -c htseq.ALL.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
 
 echo $call
 eval $call
