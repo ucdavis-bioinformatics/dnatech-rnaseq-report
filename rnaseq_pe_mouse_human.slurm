@@ -59,7 +59,8 @@ echo "Running HTStream..."
 
 mkdir -p $htsdir/$SAMPLE
 
-module load htstream/1.3.3
+#module load htstream/1.3.3
+module load conda/htstream/1.4.1
 
 if [ $dorrna == "y" ]; then
 
@@ -111,8 +112,15 @@ call="STAR --runThreadN $SLURM_CPUS_PER_TASK \
 --readFilesCommand zcat \
 --outSAMtype BAM SortedByCoordinate \
 --outFileNamePrefix $stardir/$SAMPLE/${SAMPLE}.paired. \
---readFilesIn $CLEANED_R1 $CLEANED_R2" 
+--readFilesIn $CLEANED_R1 $CLEANED_R2"
 
+echo $call
+eval $call
+
+module unload star
+module load samtools/1.19.2
+
+call="samtools index --threads $SLURM_CPUS_PER_TASK $stardir/$SAMPLE/${SAMPLE}.paired.Aligned.sortedByCoord.out.bam"
 echo $call
 eval $call
 
@@ -120,7 +128,7 @@ end=`date +%s`
 runtime=$((end-start))
 echo STAR Runtime: $runtime seconds
 
-module unload star
+module unload samtools
 ##################################
 
 

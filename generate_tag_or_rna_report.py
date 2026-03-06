@@ -108,8 +108,8 @@ if tag_or_rna == "rna":
         batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
         print(f"Array Job ID: {batch_jobid}")
 
-        # submit htseq-count job to run after array job finishes
-        subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq.slurm {SAMPLE_FILE} {STAR_DIR} {star_gtf} {PICARD_DIR}", shell=True)
+        # submit htseq-count and multiqc job to run after array job finishes
+        subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTQC_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True)
 
 
 print("Done submitting. Now you must wait.")

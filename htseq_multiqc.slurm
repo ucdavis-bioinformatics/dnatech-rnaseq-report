@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH --job-name=htseq # Job name
+#SBATCH --job-name=htseq_multiqc # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
 #SBATCH --time=0-3
@@ -12,9 +12,11 @@
 
 
 sampfile=$1
-stardir=$2
-stargtf=$3
-picarddir=$4
+stargtf=$2
+fastqcdir=$3
+htsdir=$4
+stardir=$5
+picarddir=$6
 
 
 source /etc/profile.d/modules.sh
@@ -35,7 +37,18 @@ echo "Is it stranded? $stranded"
 
 module load htseq/2.0.3
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK --with-header -r pos -s $stranded -c htseq.ALL.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
+# get sample names for header
+\ls -1 $stardir | paste -s -d$'\t' > htseq.dedup.counts.tsv
+
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c htseq.dedup.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
+
+echo $call
+eval $call
+
+# get sample names for header
+\ls -1 $stardir | paste -s -d$'\t' > htseq.ALL.counts.tsv
+
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c htseq.ALL.counts.tsv $stardir/*/*.paired.Aligned.sortedByCoord.out.bam $stargtf"
 
 echo $call
 eval $call
@@ -45,5 +58,24 @@ runtime=$((end-start))
 echo htseq-count Runtime: $runtime seconds
 
 module unload htseq
+##################################
+
+########################## multiqc
+start=`date +%s`
+
+echo "Running multiqc..."
+mkdir -p multiqc_reports
+
+module load conda/multiqc/1.33
+
+call="multiqc --pdf --filename multiqc_report.html --outdir multiqc_reports $fastqcdir"
+echo $call
+eval $call
+
+end=`date +%s`
+runtime=$((end-start))
+echo multiqc runtime: $runtime seconds
+
+module unload multiqc
 ##################################
 
