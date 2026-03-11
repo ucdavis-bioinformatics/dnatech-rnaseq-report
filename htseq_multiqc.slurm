@@ -20,7 +20,7 @@ picarddir=$6
 
 
 source /etc/profile.d/modules.sh
-
+module use /quobyte/bioinfocore-grp/modules
 
 ############################ htseq-count
 start=`date +%s`
@@ -66,7 +66,7 @@ start=`date +%s`
 echo "Running multiqc..."
 mkdir -p multiqc_reports
 
-module load conda/multiqc/1.33
+module load bioinfo/multiqc/1.33
 
 call="multiqc --pdf --filename multiqc_report.html --outdir multiqc_reports $fastqcdir"
 echo $call
@@ -76,6 +76,6 @@ end=`date +%s`
 runtime=$((end-start))
 echo multiqc runtime: $runtime seconds
 
-module unload multiqc
+module unload bioinfo/multiqc/1.33
 ##################################
 
