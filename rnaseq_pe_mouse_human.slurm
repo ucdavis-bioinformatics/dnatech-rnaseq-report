@@ -70,7 +70,7 @@ if [ $dorrna == "y" ]; then
       hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_Stats -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
+      hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
 else
 
     call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.log -1 $R1 -2 $R2 | \
@@ -78,7 +78,7 @@ else
       hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
       hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_Stats -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
+      hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
 fi
 
 echo $call
