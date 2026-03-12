@@ -68,7 +68,15 @@ mkdir -p multiqc_reports
 
 module load bioinfo/multiqc/1.33
 
-call="multiqc --pdf --filename multiqc_report --outdir multiqc_reports $fastqcdir"
+call="multiqc --pdf -f --title 'RAW READS' --filename multiqc_report_raw --outdir multiqc_reports $fastqcdir"
+echo $call
+eval $call
+
+call="multiqc --pdf -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir multiqc_reports $stardir"
+echo $call
+eval $call
+
+call="multiqc --pdf -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_picard --outdir multiqc_reports $picarddir"
 echo $call
 eval $call
 
@@ -104,7 +112,10 @@ start=`date +%s`
 echo "Creating final report..."
 module load bioinfo/qpdf/12.3.2
 
-call="qpdf --empty --pages multiqc_reports/multiqc_report.pdf mds_all.pdf mds_dedup.pdf -- final_report.pdf"
+call="qpdf --empty --pages multiqc_reports/multiqc_report_raw.pdf \
+		multiqc_reports/multiqc_report_star.pdf \
+		multiqc_reports/multiqc_report_picard.pdf \
+		mds_all.pdf mds_dedup.pdf -- final_report.pdf"
 echo $call
 eval $call
 

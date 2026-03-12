@@ -9,7 +9,7 @@ dge <- calcNormFactors(dge)
 
 pdf("mds_all.pdf")
 # MDS plot
-plotMDS(dge)
+plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
 dev.off()
 
 
@@ -23,5 +23,5 @@ dge <- calcNormFactors(dge)
 
 pdf("mds_dedup.pdf")
 # MDS plot
-plotMDS(dge)
+plotMDS(dge, main="Multi-Dimensional Scaling Plot for deduplicated counts")
 dev.off()
