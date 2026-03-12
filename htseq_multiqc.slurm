@@ -7,8 +7,8 @@
 #SBATCH --mem=20000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=low
 #SBATCH --account=publicgrp
-#SBATCH --output=slurmout/htseq_%A_%a.out
-#SBATCH --error=slurmout/htseq_%A_%a.out
+#SBATCH --output=slurmout/htseq_multiqc_%A_%a.out
+#SBATCH --error=slurmout/htseq_multiqc_%A_%a.out
 
 
 sampfile=$1
