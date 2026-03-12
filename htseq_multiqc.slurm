@@ -68,7 +68,7 @@ mkdir -p multiqc_reports
 
 module load bioinfo/multiqc/1.33
 
-call="multiqc --pdf --filename multiqc_report.pdf --outdir multiqc_reports $fastqcdir"
+call="multiqc --pdf --filename multiqc_report --outdir multiqc_reports $fastqcdir"
 echo $call
 eval $call
 
@@ -101,7 +101,7 @@ module unload R/4.4.2
 ########################## qpdf
 start=`date +%s`
 
-echo "Creating report..."
+echo "Creating final report..."
 module load bioinfo/qpdf/12.3.2
 
 call="qpdf --empty --pages multiqc_reports/multiqc_report.pdf mds_all.pdf mds_dedup.pdf -- final_report.pdf"
