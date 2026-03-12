@@ -88,7 +88,7 @@ if not os.path.exists(outputdir):
 print("Copying slurm scripts...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
-        os.system(f"cp rnaseq_pe_mouse_human.slurm htseq.slurm mds.R {outputdir}")
+        os.system(f"cp rnaseq_pe_mouse_human.slurm htseq_multiqc.slurm mds.R {outputdir}")
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
