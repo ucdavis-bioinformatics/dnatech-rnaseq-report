@@ -7,12 +7,12 @@ dge <- DGEList(counts=counts)
 # normalize
 dge <- calcNormFactors(dge)
 
-pdf("mds_all.pdf")
+pdf("report_dir/mds_all.pdf")
 # MDS plot
 plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
 dev.off()
 
-jpeg("mds_all.jpg")
+png("report_dir/mds_all.png")
 # MDS plot
 plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
 dev.off()
@@ -26,12 +26,12 @@ dge <- DGEList(counts=counts)
 # normalize
 dge <- calcNormFactors(dge)
 
-pdf("mds_dedup.pdf")
+pdf("report_dir/mds_dedup.pdf")
 # MDS plot
 plotMDS(dge, main="Multi-Dimensional Scaling Plot for deduplicated counts")
 dev.off()
 
-jpeg("mds_dedup.jpg")
+png("report_dir/mds_dedup.png")
 # MDS plot
 plotMDS(dge, main="Multi-Dimensional Scaling Plot for deduplicated counts")
 dev.off()

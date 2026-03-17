@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Report Viewer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Layout grid */
+    .container {
+      display: grid;
+      grid-template-rows: 60px 1fr;
+      grid-template-columns: 220px 1fr;
+      height: 100vh;
+    }
+
+    /* Top banner */
+    .banner {
+      grid-column: 1 / 3;
+      background: #1a252f;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: #2c3e50;
+      color: white;
+      padding-top: 10px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background: #34495e;
+    }
+
+    /* Content area */
+    .content {
+      background: #f5f5f5;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="banner">
+      <img src="biocore_banner.png">
+    </div>
+
+  <div class="sidebar">
+    <a href="multiqc_report_raw.html" target="content-frame">Raw Data</a>
+    <a href="multiqc_report_htstream.html" target="content-frame">HTStream Preprocessing</a>
+    <a href="multiqc_report_star.html" target="content-frame">STAR Alignment</a>
+    <a href="multiqc_report_picard.html" target="content-frame">Picard deduplication</a>
+    <a href="mds_plots.html" target="content-frame">MDS plots</a>
+  </div>
+
+  <div class="content">
+    <iframe name="content-frame" src="multiqc_report_raw.html"></iframe>
+  </div>
+  </div>
+
+</body>
+</html>
