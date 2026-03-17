@@ -3,7 +3,7 @@
 #SBATCH --job-name=htseq_multiqc # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
-#SBATCH --time=0-3
+#SBATCH --time=0-8
 #SBATCH --mem=20000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=low
 #SBATCH --account=publicgrp
@@ -60,7 +60,7 @@ echo htseq-count Runtime: $runtime seconds
 module unload htseq
 ##################################
 
-########################## multiqc
+############################### multiqc
 start=`date +%s`
 
 echo "Running multiqc..."
@@ -72,7 +72,15 @@ call="multiqc --pdf -f --title 'RAW READS' --filename multiqc_report_raw --outdi
 echo $call
 eval $call
 
+call="multiqc -f --title 'RAW READS' --filename multiqc_report_raw --outdir multiqc_reports $fastqcdir"
+echo $call
+eval $call
+
 call="multiqc --pdf -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir multiqc_reports $stardir"
+echo $call
+eval $call
+
+call="multiqc -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir multiqc_reports $stardir"
 echo $call
 eval $call
 
@@ -80,12 +88,28 @@ call="multiqc --pdf -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_
 echo $call
 eval $call
 
+call="multiqc -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_picard --outdir multiqc_reports $picarddir"
+echo $call
+eval $call
+
+module unload bioinfo/multiqc/1.33
+module load bioinfo/multiqc/htstream.1.13.dev0_beta
+
+call="multiqc --pdf -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir multiqc_reports $htsdir"
+echo $call
+eval $call
+
+call="multiqc -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir multiqc_reports $htsdir"
+echo $call
+eval $call
+
+module unload bioinfo/multiqc/htstream.1.13.dev0_beta
+
 end=`date +%s`
 runtime=$((end-start))
 echo multiqc runtime: $runtime seconds
 
-module unload bioinfo/multiqc/1.33
-##################################
+############################################
 
 
 ########################## MDS plots

@@ -102,7 +102,7 @@ mkdir -p $stardir/$SAMPLE
 CLEANED_R1="$htsdir/$SAMPLE/$SAMPLE.cleaned_R1.fastq.gz"
 CLEANED_R2="$htsdir/$SAMPLE/$SAMPLE.cleaned_R2.fastq.gz"
 
-module load star/2.7.11a
+module load bioinfo/star/2.7.11b
 
 call="STAR --runThreadN $SLURM_CPUS_PER_TASK \
 --genomeDir $starref \

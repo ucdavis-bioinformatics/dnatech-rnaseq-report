@@ -85,7 +85,7 @@ if not os.path.exists(outputdir):
     os.system(f"mkdir -p {outputdir}")
     os.system(f"mkdir -p {outputdir}/slurmout")
 
-print("Copying slurm scripts...")
+print("Copying scripts...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
         os.system(f"cp rnaseq_pe_mouse_human.slurm htseq_multiqc.slurm mds.R {outputdir}")
