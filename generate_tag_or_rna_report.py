@@ -84,11 +84,14 @@ if not os.path.exists(outputdir):
     print("Creating output directory...")
     os.system(f"mkdir -p {outputdir}")
     os.system(f"mkdir -p {outputdir}/slurmout")
+    os.system(f"mkdir -p {outputdir}/report_dir")
+
 
 print("Copying scripts...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
         os.system(f"cp rnaseq_pe_mouse_human.slurm htseq_multiqc.slurm mds.R {outputdir}")
+        os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
