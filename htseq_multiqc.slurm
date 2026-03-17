@@ -137,6 +137,7 @@ echo "Creating final report..."
 module load bioinfo/qpdf/12.3.2
 
 call="qpdf --empty --pages report_dir/multiqc_report_raw.pdf \
+		report_dir/multiqc_report_htstream.pdf \
 		report_dir/multiqc_report_star.pdf \
 		report_dir/multiqc_report_picard.pdf \
 		report_dir/mds_all.pdf report_dir/mds_dedup.pdf -- report_dir/final_report.pdf"
