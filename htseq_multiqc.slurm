@@ -13,7 +13,7 @@
 
 sampfile=$1
 stargtf=$2
-fastqcdir=$3
+fastpdir=$3
 htsdir=$4
 stardir=$5
 picarddir=$6
@@ -26,6 +26,7 @@ module use /quobyte/bioinfocore-grp/modules
 start=`date +%s`
 
 echo "Running htseq-count..."
+mkdir -p report_dir
 
 # get first sample id
 SAMPLE=`head -n 1 $sampfile | tail -1 | cut -f1`
@@ -38,17 +39,17 @@ echo "Is it stranded? $stranded"
 module load htseq/2.0.3
 
 # get sample names for header
-\ls -1 $stardir | paste -s -d$'\t' > htseq.dedup.counts.tsv
+\ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.dedup.counts.tsv
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c htseq.dedup.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.dedup.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
 
 echo $call
 eval $call
 
 # get sample names for header
-\ls -1 $stardir | paste -s -d$'\t' > htseq.ALL.counts.tsv
+\ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.ALL.counts.tsv
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c htseq.ALL.counts.tsv $stardir/*/*.paired.Aligned.sortedByCoord.out.bam $stargtf"
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.paired.Aligned.sortedByCoord.out.bam $stargtf"
 
 echo $call
 eval $call
@@ -64,15 +65,14 @@ module unload htseq
 start=`date +%s`
 
 echo "Running multiqc..."
-mkdir -p report_dir
 
 module load bioinfo/multiqc/1.33
 
-call="multiqc --pdf -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastqcdir"
+call="multiqc --pdf -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
 echo $call
 eval $call
 
-call="multiqc -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastqcdir"
+call="multiqc -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
 echo $call
 eval $call
 

@@ -8,7 +8,7 @@ RRNA_MOUSE_FILE="/quobyte/bioinfocore-grp/genomes/mouse/GRCm39/rRNA_mouse_03-12-
 
 SAMPLE_FILE="sample_data.txt"
 
-FASTQC_DIR="00-FastQC"
+FASTP_DIR="00-FastP"
 HTS_DIR="01-HTStream"
 STAR_DIR="02-STAR"
 PICARD_DIR="03-picard"

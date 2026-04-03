@@ -17,7 +17,7 @@ starref=$2
 stargtf=$3
 dorrna=$4
 rrnafile=$5
-fastqcdir=$6
+fastpdir=$6
 htsdir=$7
 stardir=$8
 picarddir=$9
@@ -31,24 +31,24 @@ echo "Sample: $SAMPLE"
 
 source /etc/profile.d/modules.sh
 
-############### fastqc
+############### fastp
 start=`date +%s`
 
-mkdir -p $fastqcdir/$SAMPLE
+mkdir -p $fastpdir/$SAMPLE
 
-echo "Running FastQC..."
+echo "Running FastP..."
 
-module load fastqc/0.12.1
+module load fastp/0.23.4
 
-call="fastqc --threads $SLURM_CPUS_PER_TASK -o $fastqcdir/$SAMPLE $R1 $R2"
+call="fastp --thread $SLURM_CPUS_PER_TASK -i $R1 -I $R2 -j $fastpdir/$SAMPLE/$SAMPLE.fastp.json -h $fastpdir/$SAMPLE/$SAMPLE.fastp.html"
 echo $call
 eval $call
 
 end=`date +%s`
 runtime=$((end-start))
-echo FastQC Runtime: $runtime seconds
+echo FastP Runtime: $runtime seconds
 
-module unload fastqc
+module unload fastp/0.23.4
 
 #########################
 

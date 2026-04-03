@@ -1,6 +1,6 @@
 library(edgeR)
 
-counts <- read.table("htseq.ALL.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
+counts <- read.table("report_dir/htseq.ALL.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
 
 dge <- DGEList(counts=counts)
 
@@ -19,7 +19,7 @@ dev.off()
 
 
 
-counts <- read.table("htseq.dedup.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
+counts <- read.table("report_dir/htseq.dedup.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
 
 dge <- DGEList(counts=counts)
 
