@@ -87,10 +87,10 @@ if not os.path.exists(outputdir):
     os.system(f"mkdir -p {outputdir}/report_dir")
 
 
-print("Copying scripts...")
+print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
     if mhcheck=="mouse" or mhcheck=="human":
-        os.system(f"cp rnaseq_pe_mouse_human.slurm htseq_multiqc.slurm mds.R {outputdir}")
+        os.system(f"cp rnaseq_pe_mouse_human.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
         os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
 
 print("Creating sample info file...")

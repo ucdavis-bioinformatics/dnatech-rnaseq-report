@@ -61,56 +61,6 @@ echo htseq-count Runtime: $runtime seconds
 module unload htseq
 ##################################
 
-############################### multiqc
-start=`date +%s`
-
-echo "Running multiqc..."
-
-module load bioinfo/multiqc/1.33
-
-call="multiqc --pdf -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
-echo $call
-eval $call
-
-call="multiqc -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
-echo $call
-eval $call
-
-call="multiqc --pdf -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir report_dir $stardir"
-echo $call
-eval $call
-
-call="multiqc -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir report_dir $stardir"
-echo $call
-eval $call
-
-call="multiqc --pdf -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_picard --outdir report_dir $picarddir"
-echo $call
-eval $call
-
-call="multiqc -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_picard --outdir report_dir $picarddir"
-echo $call
-eval $call
-
-module unload bioinfo/multiqc/1.33
-module load bioinfo/multiqc/htstream.1.13.dev0_beta
-
-call="multiqc --pdf -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir report_dir $htsdir"
-echo $call
-eval $call
-
-call="multiqc -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir report_dir $htsdir"
-echo $call
-eval $call
-
-module unload bioinfo/multiqc/htstream.1.13.dev0_beta
-
-end=`date +%s`
-runtime=$((end-start))
-echo multiqc runtime: $runtime seconds
-
-############################################
-
 
 ########################## MDS plots
 start=`date +%s`
@@ -130,23 +80,46 @@ module unload R/4.4.2
 ##################################
 
 
-########################## qpdf
+############################### multiqc
 start=`date +%s`
 
-echo "Creating final report..."
-module load bioinfo/qpdf/12.3.2
+echo "Creating HTML and PDF reports..."
 
-call="qpdf --empty --pages report_dir/multiqc_report_raw.pdf \
-		report_dir/multiqc_report_htstream.pdf \
-		report_dir/multiqc_report_star.pdf \
-		report_dir/multiqc_report_picard.pdf \
-		report_dir/mds_all.pdf report_dir/mds_dedup.pdf -- report_dir/final_report.pdf"
+module load bioinfo/multiqc/1.33
+
+call="multiqc -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
 echo $call
 eval $call
 
+call="multiqc -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir report_dir $stardir"
+echo $call
+eval $call
+
+call="multiqc -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_picard --outdir report_dir $picarddir"
+echo $call
+eval $call
+
+module unload bioinfo/multiqc/1.33
+module load bioinfo/multiqc/htstream.1.13.dev0_beta
+
+call="multiqc -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir report_dir $htsdir"
+echo $call
+eval $call
+
+echo -e "$fastpdir\n$htsdir\n$stardir\n$picarddir" > mqc.dirlist.txt
+
+echo Creating PDF report...
+call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"
+echo $call
+eval $call
+
+module unload bioinfo/multiqc/htstream.1.13.dev0_beta
+
 end=`date +%s`
 runtime=$((end-start))
-echo report runtime: $runtime seconds
+echo Report creation runtime: $runtime seconds
 
-module unload bioinfo/qpdf/12.3.2
-##################################
+############################################
+
+
+

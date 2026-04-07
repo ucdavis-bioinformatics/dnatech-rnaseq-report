@@ -1,0 +1,24 @@
+custom_logo: "report_dir/biocore_banner.png"
+
+custom_data:
+    my_data_type:
+        id: 'mdsplots'
+        section_name: 'MDS Plots'
+        plot_type: 'html'
+        data: '<img src="report_dir/mds_all.png"><br><img src="report_dir/mds_dedup.png">'
+
+custom_content:
+  my_custom_section:
+    id: "mds_section"
+    section_name: "MDS Plots"
+    plot_type: "html"
+    data: mdsplots
+
+
+module_order:
+  - fastp
+  - htstream
+  - star
+  - picard
+  - custom_content
+  
