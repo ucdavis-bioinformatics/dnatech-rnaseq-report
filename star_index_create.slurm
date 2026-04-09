@@ -18,6 +18,8 @@ GTF=$2
 INDEX_DIR=$3
 OVERHANG=$4
 
+source /etc/profile.d/modules.sh
+module use /quobyte/bioinfocore-grp/modules
 
 module load bioinfo/star/2.7.11b
 

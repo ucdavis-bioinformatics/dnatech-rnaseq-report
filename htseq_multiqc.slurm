@@ -109,7 +109,7 @@ eval $call
 echo -e "$fastpdir\n$htsdir\n$stardir\n$picarddir" > mqc.dirlist.txt
 
 echo Creating PDF report...
-call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"
+call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"
 echo $call
 eval $call
 
