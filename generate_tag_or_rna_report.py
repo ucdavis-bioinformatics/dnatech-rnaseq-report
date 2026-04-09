@@ -11,12 +11,12 @@ import subprocess
 import gzip
 from config import *
 
-hm_data = {"human" : {"star_ref_dir" : STAR_REF_HUMAN_DIR,
+hm_data = {"human" : {"star_index_dir" : STAR_INDEX_HUMAN_DIR,
                       "star_gtf" : STAR_GTF_HUMAN_FILE,
                       "rrna_file" : RRNA_HUMAN_FILE
             },
 
-           "mouse" : {"star_ref_dir" : STAR_REF_MOUSE_DIR,
+           "mouse" : {"star_index_dir" : STAR_INDEX_MOUSE_DIR,
                       "star_gtf" : STAR_GTF_MOUSE_FILE,
                       "rrna_file" : RRNA_MOUSE_FILE
             }
@@ -26,9 +26,22 @@ hm_data = {"human" : {"star_ref_dir" : STAR_REF_HUMAN_DIR,
 readline.set_completer_delims(' \t\n=')
 readline.parse_and_bind("tab:complete")
 
-tag_or_rna = input("RNA-Seq or TAG-Seq (rna/tag)? ")
+while True:
+    tag_or_rna = input("RNA-Seq or TAG-Seq (rna/tag)? ")
+    if tag_or_rna == "rna" or tag_or_rna == "tag":
+        break
+    else:
+        print("Invalid input, try again.")
 
-inputdir = input("Path to fastq file directory: ")
+
+while True:
+    inputdir = input("Path to fastq file directory: ")
+    if os.path.exists(inputdir):
+        break
+    else:
+        print("Path does not exist. Try again.")
+
+
 input_files_R1 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R1.*.fastq.gz', f)]
 input_files_R1.sort()
 
@@ -51,22 +64,41 @@ sample_ids = list(set(sample_ids))
 sample_ids.sort()
 
 print("Sample IDs:\n", sample_ids, "\n")
-sampidcheck = input("Are these sample IDs correct (y/n)? ")
 
-if sampidcheck != "y" and sampidcheck != "Y":
+while True:
+    sampidcheck = input("Are these sample IDs correct (y/n)? ")
+    if sampidcheck == "y" or sampidcheck == "n":
+        break
+    else:
+        print("Invalid input, try again.")
+
+
+if sampidcheck == "n":
     print("Exiting.")
     sys.exit(1)
 
-outputdir = input("\nPath to output directory: ")
+
+while True:
+    outputdir = input("\nPath to new output directory: ")
+    if not os.path.exists(outputdir):
+        break
+    else:
+        print("Path exists. Choose a new path.")
 
 
-mhcheck = input("\nDo you want to use the mouse/human reference or not (mouse/human/n)? ")
+while True:
+    mhcheck = input("\nDo you want to use the mouse/human reference or not (mouse/human/n)? ")
+    if mhcheck == "mouse" or mhcheck == "human" or mhcheck == "n":
+        break
+    else:
+        print("Invalid input, try again.")
 
-star_ref_dir=""
+
+star_index_dir=""
 star_gtf=""
 star_fasta=""
 if mhcheck=="mouse" or mhcheck=="human":
-    star_ref_dir = hm_data[mhcheck]["star_ref_dir"]
+    star_index_dir = hm_data[mhcheck]["star_index_dir"]
     star_gtf = hm_data[mhcheck]["star_gtf"]
 else:
     star_fasta = input("\nPath to reference fasta file: ")
@@ -99,7 +131,7 @@ print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
     if mhcheck.lower() == "n":
-        os.system(f"cp star_ref_create.slurm {outputdir}")
+        os.system(f"cp star_index_create.slurm {outputdir}")
 
     os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
     os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
@@ -128,8 +160,8 @@ if tag_or_rna == "rna":
         index_dep = f"--dependency=afterok:{batch_jobid}"
 
 
-    print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
-    sbatch_output = subprocess.run(f"sbatch {ref_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
+    print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
+    sbatch_output = subprocess.run(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
 
     #print(sbatch_output.stdout)
     batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
