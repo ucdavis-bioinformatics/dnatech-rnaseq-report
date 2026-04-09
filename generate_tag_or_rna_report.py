@@ -101,21 +101,51 @@ if mhcheck=="mouse" or mhcheck=="human":
     star_index_dir = hm_data[mhcheck]["star_index_dir"]
     star_gtf = hm_data[mhcheck]["star_gtf"]
 else:
-    star_fasta = input("\nPath to reference fasta file: ")
-    star_gtf = input("\nPath to annotation file (GTF format): ")
+    while True:
+        star_fasta = input("\nPath to reference fasta file: ")
+        if os.path.exists(star_fasta):
+            break
+        else:
+            print("File does not exist. Try again.")
+
+    while True:
+        star_gtf = input("\nPath to annotation file (GTF format): ")
+        if os.path.exists(star_gtf):
+            break
+        else:
+            print("File does not exist. Try again.")
 
 
-rrna_check = input("Find rRNA count (y/n)? ")
+while True:
+    rrna_check = input("Find rRNA count (y/n)? ")
+    if rrna_check == "y" or rrna_check == "n":
+        break
+    else:
+        print("Invalid input, try again.")
+
+
 rrna_fasta="NA"
-if (rrna_check == "y" or rrna_check == "Y"):
+if (rrna_check == "y"):
     if (mhcheck == "mouse" or mhcheck == "human"):
         rrna_fasta = hm_data[mhcheck]["rrna_file"]
     else:
-        rrna_fasta = input("Path to rRNA FASTA file: ")
+        while True:
+            rrna_fasta = input("Path to rRNA FASTA file: ")
+            if os.path.exists(rrna_fasta):
+                break
+            else:
+                print("File does not exist. Try again.")
 
 
-runcheck = input("\nRun (y/n)? ")
-if runcheck != "y" and runcheck != "Y":
+while True:
+    runcheck = input("\nRun (y/n)? ")
+    if runcheck == "y" or runcheck == "n":
+        break
+    else:
+        print("Invalid input, try again.")
+
+
+if runcheck == "n":
     print("Exiting.")
     sys.exit(1)
 
@@ -130,7 +160,7 @@ if not os.path.exists(outputdir):
 print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
-    if mhcheck.lower() == "n":
+    if mhcheck == "n":
         os.system(f"cp star_index_create.slurm {outputdir}")
 
     os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
@@ -149,7 +179,7 @@ if tag_or_rna == "rna":
 
     index_dep=""
     # if we need to make a custom star index
-    if mhcheck.lower() == "n":
+    if mhcheck == "n":
 
         star_index_dir = "star_index"
         os.system(f"mkdir {star_index_dir}")
@@ -160,7 +190,7 @@ if tag_or_rna == "rna":
         index_dep = f"--dependency=afterok:{batch_jobid}"
 
 
-    print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
+    print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
     sbatch_output = subprocess.run(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
 
     #print(sbatch_output.stdout)
