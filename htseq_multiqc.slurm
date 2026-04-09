@@ -3,7 +3,7 @@
 #SBATCH --job-name=htseq_multiqc # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
-#SBATCH --time=0-8
+#SBATCH --time=0-5
 #SBATCH --mem=20000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=low
 #SBATCH --account=publicgrp

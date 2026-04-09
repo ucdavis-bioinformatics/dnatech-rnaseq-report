@@ -3,7 +3,7 @@
 #SBATCH --job-name=rnaseq_mh # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
-#SBATCH --time=3-0
+#SBATCH --time=1-0
 #SBATCH --mem=50000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=low
 #SBATCH --account=publicgrp

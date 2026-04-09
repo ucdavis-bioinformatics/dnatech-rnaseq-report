@@ -3,7 +3,7 @@
 #SBATCH --job-name=star_index # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
-#SBATCH --time=2-0
+#SBATCH --time=0-3
 #SBATCH --mem=70000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=low
 #SBATCH --account=publicgrp
