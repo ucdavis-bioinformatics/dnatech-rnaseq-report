@@ -8,6 +8,7 @@ import os
 import re
 import sys
 import subprocess
+import gzip
 from config import *
 
 hm_data = {"human" : {"star_ref_dir" : STAR_REF_HUMAN_DIR,
@@ -34,8 +35,15 @@ input_files_R1.sort()
 input_files_R2 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R2.*.fastq.gz', f)]
 input_files_R2.sort()
 
-
 print("Input files:\n", input_files_R1, "\n", input_files_R2, "\n")
+
+# find length of reads
+with gzip.open(f"{inputdir}/{input_files_R1[0]}", 'rb') as file:
+    file.readline() # header line
+    readlen = len(file.readline().strip())
+
+print(f"Read Length: {readlen}")
+
 
 sample_ids = [re.search(r'^(.+)_S\d+_L\d+_R\d_\d+.fastq.gz', s).group(1) for s in input_files_R1]
 # get unique ids
@@ -114,10 +122,11 @@ if tag_or_rna == "rna":
         star_index_dir = "star_index"
         os.system(f"mkdir {star_index_dir}")
 
-        print(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir}")
-        sbatch_output = subprocess.run(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir}", shell=True, capture_output=True)
+        print(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}")
+        sbatch_output = subprocess.run(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}", shell=True, capture_output=True)
         batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
         index_dep = f"--dependency=afterok:{batch_jobid}"
+
 
     print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
     sbatch_output = subprocess.run(f"sbatch {ref_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
