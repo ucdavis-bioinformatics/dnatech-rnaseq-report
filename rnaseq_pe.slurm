@@ -7,8 +7,8 @@
 #SBATCH --mem=50000 # Memory pool for all cores (see also --mem-per-cpu)
 #SBATCH --partition=low
 #SBATCH --account=publicgrp
-#SBATCH --output=slurmout/rnaseq_mh_%A_%a.out
-#SBATCH --error=slurmout/rnaseq_mh_%A_%a.out
+#SBATCH --output=slurmout/rnaseq_pe_%A_%a.out
+#SBATCH --error=slurmout/rnaseq_pe_%A_%a.out
 
 
 hostname

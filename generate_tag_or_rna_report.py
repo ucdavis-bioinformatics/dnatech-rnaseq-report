@@ -190,6 +190,7 @@ if tag_or_rna == "rna":
         index_dep = f"--dependency=afterok:{batch_jobid}"
 
 
+    # submit rna seq job
     print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
     sbatch_output = subprocess.run(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
 
@@ -198,6 +199,7 @@ if tag_or_rna == "rna":
     print(f"Array Job ID: {batch_jobid}")
 
     # submit htseq-count and multiqc job to run after array job finishes
+    print(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
     subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True)
 
 
