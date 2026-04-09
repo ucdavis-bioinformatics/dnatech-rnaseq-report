@@ -89,9 +89,12 @@ if not os.path.exists(outputdir):
 
 print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
-    if mhcheck=="mouse" or mhcheck=="human":
-        os.system(f"cp rnaseq_pe_mouse_human.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
-        os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
+
+    if mhcheck.lower() == "n":
+        os.system(f"cp star_ref_create.slurm {outputdir}")
+
+    os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
+    os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
@@ -103,16 +106,28 @@ os.chdir(outputdir)
 
 print("Submitting slurm array script for all samples...")
 if tag_or_rna == "rna":
-    if mhcheck=="mouse" or mhcheck=="human":
-        print(f"sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
-        sbatch_output = subprocess.run(f"sbatch --array=1-{len(sample_ids)} rnaseq_pe_mouse_human.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
 
-        #print(sbatch_output.stdout)
+    index_dep=""
+    # if we need to make a custom star index
+    if mhcheck.lower() == "n":
+
+        star_index_dir = "star_index"
+        os.system(f"mkdir {star_index_dir}")
+
+        print(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir}")
+        sbatch_output = subprocess.run(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir}", shell=True, capture_output=True)
         batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
-        print(f"Array Job ID: {batch_jobid}")
+        index_dep = f"--dependency=afterok:{batch_jobid}"
 
-        # submit htseq-count and multiqc job to run after array job finishes
-        subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True)
+    print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check.lower()} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
+    sbatch_output = subprocess.run(f"sbatch {ref_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_ref_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
+
+    #print(sbatch_output.stdout)
+    batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
+    print(f"Array Job ID: {batch_jobid}")
+
+    # submit htseq-count and multiqc job to run after array job finishes
+    subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True)
 
 
 print("Done submitting. Now you must wait.")

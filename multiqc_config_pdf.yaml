@@ -1,5 +1,17 @@
 custom_logo: "report_dir/biocore_banner.png"
 
+# table_columns_visible:
+#   general_stats_table_table:
+#     fastp-after_filtering_q30_rate: false
+#     fastp-after_filtering_q30_bases: false
+#     fastp-before_filtering_read1_mean_length: false
+#     fastp-before_filtering_read2_mean_length: false
+#     fastp-pct_duplication: false
+
+table_columns_visible:
+  fastp: false
+
+
 custom_data:
     my_data_type:
         id: 'mdsplots'

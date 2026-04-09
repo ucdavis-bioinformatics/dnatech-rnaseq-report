@@ -1,6 +1,6 @@
 STAR_REF_HUMAN_DIR="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/STAR_2.7.11b_index"
 STAR_GTF_HUMAN_FILE="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf"
-RRNA_HUMAN_FILE="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf"
+RRNA_HUMAN_FILE="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/rRNA_human_03-12-2026.fasta"
 
 STAR_REF_MOUSE_DIR="/quobyte/bioinfocore-grp/genomes/mouse/GRCm39/STAR_GRCm39_vM38"
 STAR_GTF_MOUSE_FILE="/quobyte/bioinfocore-grp/genomes/mouse/GRCm39/gencode.vM38.basic.annotation.gtf"
