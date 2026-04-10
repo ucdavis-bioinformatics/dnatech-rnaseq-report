@@ -66,7 +66,7 @@ sample_ids.sort()
 print("Sample IDs:\n", sample_ids, "\n")
 
 while True:
-    sampidcheck = input("Are these sample IDs correct (y/n)? ")
+    sampidcheck = input("Are these sample IDs and R1/R2 files correct (y/n)? ")
     if sampidcheck == "y" or sampidcheck == "n":
         break
     else:
