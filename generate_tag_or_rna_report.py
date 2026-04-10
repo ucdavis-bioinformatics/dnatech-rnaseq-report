@@ -36,10 +36,10 @@ while True:
 
 while True:
     inputdir = input("Path to fastq file directory: ")
-    if os.path.exists(inputdir):
+    if os.access(inputdir, os.R_OK) and os.path.exists(inputdir):
         break
     else:
-        print("Path does not exist. Try again.")
+        print("Path does not exist or you do not have read permission. Try again.")
 
 
 input_files_R1 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R1.*.fastq.gz', f)]
@@ -80,10 +80,10 @@ if sampidcheck == "n":
 
 while True:
     outputdir = input("\nPath to new output directory: ")
-    if not os.path.exists(outputdir):
+    if os.access(os.path.dirname(outputdir), os.W_OK) and not os.path.exists(outputdir):
         break
     else:
-        print("Path exists. Choose a new path.")
+        print("Path exists or you do not have write access to that path. Choose a new path.")
 
 
 while True:
@@ -103,17 +103,17 @@ if mhcheck=="mouse" or mhcheck=="human":
 else:
     while True:
         star_fasta = input("\nPath to reference fasta file: ")
-        if os.path.exists(star_fasta):
+        if os.access(star_fasta, os.R_OK) and os.path.exists(star_fasta):
             break
         else:
-            print("File does not exist. Try again.")
+            print("File does not exist or you do not have read permission. Try again.")
 
     while True:
         star_gtf = input("\nPath to annotation file (GTF format): ")
-        if os.path.exists(star_gtf):
+        if os.access(star_gtf, os.R_OK) and os.path.exists(star_gtf):
             break
         else:
-            print("File does not exist. Try again.")
+            print("File does not exist or you do not have read permission. Try again.")
 
 
 while True:
@@ -131,10 +131,10 @@ if (rrna_check == "y"):
     else:
         while True:
             rrna_fasta = input("Path to rRNA FASTA file: ")
-            if os.path.exists(rrna_fasta):
+            if os.access(rrna_fasta, os.R_OK) and os.path.exists(rrna_fasta):
                 break
             else:
-                print("File does not exist. Try again.")
+                print("File does not exist or you do not have read permission. Try again.")
 
 
 while True:
