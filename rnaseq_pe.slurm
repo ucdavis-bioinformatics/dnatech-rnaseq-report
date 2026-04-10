@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-#SBATCH --job-name=rnaseq_mh # Job name
+#SBATCH --job-name=rnaseq_pe # Job name
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=10
 #SBATCH --time=1-0
