@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-# /share/illumina/hiseq/251222_DTSA1203_NovaX25B/Un_DTSA1203/Project_DLNK_Nova1437P_Krishnakumar/
-# /quobyte/danikagrp/fastq/DNATechCore_241203/Data/ywsgtue2vu/Un_DTSA1014/Project_DBJV_NovaSeq1194P_Vo
-
 import readline
 import os
 import re
