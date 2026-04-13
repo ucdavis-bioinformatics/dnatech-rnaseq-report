@@ -111,7 +111,7 @@ call="STAR --runThreadN $SLURM_CPUS_PER_TASK \
 --quantMode GeneCounts \
 --readFilesCommand zcat \
 --outSAMtype BAM SortedByCoordinate \
---outFileNamePrefix $stardir/$SAMPLE/${SAMPLE}.paired. \
+--outFileNamePrefix $stardir/$SAMPLE/${SAMPLE}. \
 --readFilesIn $CLEANED_R1 $CLEANED_R2"
 
 echo $call
@@ -120,7 +120,7 @@ eval $call
 module unload star
 module load samtools/1.19.2
 
-call="samtools index --threads $SLURM_CPUS_PER_TASK $stardir/$SAMPLE/${SAMPLE}.paired.Aligned.sortedByCoord.out.bam"
+call="samtools index --threads $SLURM_CPUS_PER_TASK $stardir/$SAMPLE/${SAMPLE}.Aligned.sortedByCoord.out.bam"
 echo $call
 eval $call
 
@@ -139,7 +139,7 @@ echo "Running picard (removing duplicates)..."
 
 mkdir -p $depdupdir/$SAMPLE
 
-BAMFILE="$stardir/$SAMPLE/${SAMPLE}.paired.Aligned.sortedByCoord.out.bam"
+BAMFILE="$stardir/$SAMPLE/${SAMPLE}.Aligned.sortedByCoord.out.bam"
 
 module load picard/3.1.1
 

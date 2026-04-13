@@ -32,7 +32,7 @@ mkdir -p report_dir
 SAMPLE=`head -n 1 $sampfile | tail -1 | cut -f1`
 
 # find strandedness using STAR output
-stranded=`tail -n +5 $stardir/$SAMPLE/$SAMPLE.paired.ReadsPerGene.out.tab | perl -ane '$u+=$F[1]; $f+=$F[2]; $r+=$F[3]; }{ if ($u>$f && $u>$r) {print "no";} elsif ($f>$u && $f>$r) {print "yes";} elsif ($r>$u && $r>$f) {print "reverse";} else {print "ERROR WITH STRAND CALC";}'`
+stranded=`tail -n +5 $stardir/$SAMPLE/$SAMPLE.ReadsPerGene.out.tab | perl -ane '$u+=$F[1]; $f+=$F[2]; $r+=$F[3]; }{ if ($u>$f && $u>$r) {print "no";} elsif ($f>$u && $f>$r) {print "yes";} elsif ($r>$u && $r>$f) {print "reverse";} else {print "ERROR WITH STRAND CALC";}'`
 
 echo "Is it stranded? $stranded"
 
@@ -49,7 +49,7 @@ eval $call
 # get sample names for header
 \ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.ALL.counts.tsv
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.paired.Aligned.sortedByCoord.out.bam $stargtf"
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.Aligned.sortedByCoord.out.bam $stargtf"
 
 echo $call
 eval $call
