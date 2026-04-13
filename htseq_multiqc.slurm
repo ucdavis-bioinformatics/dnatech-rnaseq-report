@@ -16,7 +16,7 @@ stargtf=$2
 fastpdir=$3
 htsdir=$4
 stardir=$5
-picarddir=$6
+dedupdir=$6
 
 
 source /etc/profile.d/modules.sh
@@ -41,7 +41,7 @@ module load htseq/2.0.3
 # get sample names for header
 \ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.dedup.counts.tsv
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.dedup.counts.tsv $picarddir/*/*.remdup.bam $stargtf"
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.dedup.counts.tsv $dedupdir/*/*.remdup.bam $stargtf"
 
 echo $call
 eval $call
@@ -95,7 +95,7 @@ call="multiqc -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdi
 echo $call
 eval $call
 
-call="multiqc -f --title 'PICARD DEDUPLICATION' --filename multiqc_report_picard --outdir report_dir $picarddir"
+call="multiqc -f --title 'DEDUPLICATION' --filename multiqc_report_dedup --outdir report_dir $dedupdir"
 echo $call
 eval $call
 
@@ -106,7 +106,7 @@ call="multiqc -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htst
 echo $call
 eval $call
 
-echo -e "$fastpdir\n$htsdir\n$stardir\n$picarddir" > mqc.dirlist.txt
+echo -e "$fastpdir\n$htsdir\n$stardir\n$dedupdir" > mqc.dirlist.txt
 
 echo Creating PDF report...
 call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"

@@ -45,10 +45,13 @@ while True:
 input_files_R1 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R1.*.fastq.gz', f)]
 input_files_R1.sort()
 
-input_files_R2 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R2.*.fastq.gz', f)]
-input_files_R2.sort()
+print("Input files:\n", input_files_R1)
 
-print("Input files:\n", input_files_R1, "\n", input_files_R2, "\n")
+if tag_or_rna == "rna":
+    input_files_R2 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R2.*.fastq.gz', f)]
+    input_files_R2.sort()
+
+    print(input_files_R2, "\n")
 
 # find length of reads
 with gzip.open(f"{inputdir}/{input_files_R1[0]}", 'rb') as file:
@@ -58,7 +61,11 @@ with gzip.open(f"{inputdir}/{input_files_R1[0]}", 'rb') as file:
 print(f"Read Length: {readlen}")
 
 
-sample_ids = [re.search(r'^(.+)_S\d+_L\d+_R\d_\d+.fastq.gz', s).group(1) for s in input_files_R1]
+if tag_or_rna == "rna":
+    sample_ids = [re.search(r'^(.+)_S\d+_L\d+_R\d_\d+.fastq.gz', s).group(1) for s in input_files_R1]
+else:
+    sample_ids = [re.search(r'^(.+)_TAG\d+_S\d+_L\d+_R\d_\d+.fastq.gz', s).group(1) for s in input_files_R1]
+
 # get unique ids
 sample_ids = list(set(sample_ids))
 sample_ids.sort()
@@ -66,7 +73,7 @@ sample_ids.sort()
 print("Sample IDs:\n", sample_ids, "\n")
 
 while True:
-    sampidcheck = input("Are these sample IDs and R1/R2 files correct (y/n)? ")
+    sampidcheck = input("Are these sample IDs and files correct (y/n)? ")
     if sampidcheck == "y" or sampidcheck == "n":
         break
     else:
@@ -160,47 +167,56 @@ if not os.path.exists(outputdir):
 print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
-    if mhcheck == "n":
-        os.system(f"cp star_index_create.slurm {outputdir}")
-
     os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
     os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
+    analysis_script = "rnaseq_pe.slurm"
+
+else:
+    os.system(f"cp tagseq.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
+    os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
+    analysis_script = "tagseq.slurm"
+
+if mhcheck == "n":
+    os.system(f"cp star_index_create.slurm {outputdir}")
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
     with open(f"{outputdir}/{SAMPLE_FILE}", 'w') as file:
         for index,sampid in enumerate(sample_ids):
             file.write(f"{sampid}\t{inputdir}/{input_files_R1[index]}\t{inputdir}/{input_files_R2[index]}\n")
+else:
+    with open(f"{outputdir}/{SAMPLE_FILE}", 'w') as file:
+        for index,sampid in enumerate(sample_ids):
+            file.write(f"{sampid}\t{inputdir}/{input_files_R1[index]}\n")
 
 os.chdir(outputdir)
 
 print("Submitting slurm array script for all samples...")
-if tag_or_rna == "rna":
 
-    index_dep=""
-    # if we need to make a custom star index
-    if mhcheck == "n":
+index_dep=""
+# if we need to make a custom star index
+if mhcheck == "n":
 
-        star_index_dir = "star_index"
-        os.system(f"mkdir {star_index_dir}")
+    star_index_dir = "star_index"
+    os.system(f"mkdir {star_index_dir}")
 
-        print(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}")
-        sbatch_output = subprocess.run(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}", shell=True, capture_output=True)
-        batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
-        index_dep = f"--dependency=afterok:{batch_jobid}"
-
-
-    # submit rna seq job
-    print(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
-    sbatch_output = subprocess.run(f"sbatch {index_dep} --array=1-{len(sample_ids)} rnaseq_pe.slurm {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True, capture_output=True)
-
-    #print(sbatch_output.stdout)
+    print(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}")
+    sbatch_output = subprocess.run(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}", shell=True, capture_output=True)
     batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
-    print(f"Array Job ID: {batch_jobid}")
+    index_dep = f"--dependency=afterok:{batch_jobid}"
 
-    # submit htseq-count and multiqc job to run after array job finishes
-    print(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}")
-    subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {PICARD_DIR}", shell=True)
+
+# submit rna or tag seq job
+print(f"sbatch {index_dep} --array=1-{len(sample_ids)} {analysis_script} {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}")
+sbatch_output = subprocess.run(f"sbatch {index_dep} --array=1-{len(sample_ids)} {analysis_script} {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}", shell=True, capture_output=True)
+
+#print(sbatch_output.stdout)
+batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
+print(f"Array Job ID: {batch_jobid}")
+
+# submit htseq-count and multiqc job to run after array job finishes
+print(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}")
+subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}", shell=True)
 
 
 print("Done submitting. Now you must wait.")

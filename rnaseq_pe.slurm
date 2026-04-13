@@ -20,7 +20,7 @@ rrnafile=$5
 fastpdir=$6
 htsdir=$7
 stardir=$8
-picarddir=$9
+dedupdir=$9
 
 
 SAMPLE=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f1`
@@ -64,21 +64,21 @@ module load conda/htstream/1.4.1
 
 if [ $dorrna == "y" ]; then
 
-    call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.log -1 $R1 -2 $R2 | \
-      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.log -s $rrnafile | \
-      hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
+    call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.json -1 $R1 -2 $R2 | \
+      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json -s $rrnafile | \
+      hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.json"
 else
 
-    call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.log -1 $R1 -2 $R2 | \
-      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.log | \
-      hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.log"
+    call="hts_Stats -L $htsdir/$SAMPLE/$SAMPLE.stats.json -1 $R1 -2 $R2 | \
+      hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.json"
 fi
 
 echo $call
@@ -137,19 +137,19 @@ start=`date +%s`
 
 echo "Running picard (removing duplicates)..."
 
-mkdir -p $picarddir/$SAMPLE
+mkdir -p $depdupdir/$SAMPLE
 
 BAMFILE="$stardir/$SAMPLE/${SAMPLE}.paired.Aligned.sortedByCoord.out.bam"
 
 module load picard/3.1.1
 
-call="picard MarkDuplicates --REMOVE_DUPLICATES true --INPUT $BAMFILE --METRICS_FILE $picarddir/$SAMPLE/$SAMPLE.picard.metrics --OUTPUT $picarddir/$SAMPLE/$SAMPLE.remdup.bam"
+call="picard MarkDuplicates --REMOVE_DUPLICATES true --INPUT $BAMFILE --METRICS_FILE $depdupdir/$SAMPLE/$SAMPLE.picard.metrics --OUTPUT $depdupdir/$SAMPLE/$SAMPLE.remdup.bam"
 
 echo $call
 eval $call
 
 module load samtools/1.19.2
-call="samtools index --threads $SLURM_CPUS_PER_TASK $picarddir/$SAMPLE/$SAMPLE.remdup.bam"
+call="samtools index --threads $SLURM_CPUS_PER_TASK $depdupdir/$SAMPLE/$SAMPLE.remdup.bam"
 echo $call
 eval $call
 
