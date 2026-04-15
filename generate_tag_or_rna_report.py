@@ -165,12 +165,12 @@ print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
     os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
-    os.system(f"cp biocore_banner.png final_report_rnaseq.html mds_plots.html {outputdir}/report_dir/")
+    os.system(f"cp biocore_banner.png final_report_rnaseq.html mds_plots_rnaseq.html {outputdir}/report_dir/")
     analysis_script = "rnaseq_pe.slurm"
 
 else:
     os.system(f"cp tagseq.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
-    os.system(f"cp biocore_banner.png final_report_tagseq.html mds_plots.html {outputdir}/report_dir/")
+    os.system(f"cp biocore_banner.png final_report_tagseq.html mds_plot_tagseq.html {outputdir}/report_dir/")
     analysis_script = "tagseq.slurm"
 
 if mhcheck == "n":
