@@ -98,7 +98,13 @@ call="multiqc -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdi
 echo $call
 eval $call
 
-call="multiqc -f --title 'DEDUPLICATION' --filename multiqc_report_dedup --outdir report_dir $dedupdir"
+if [[ $tag_or_rna == "rna" ]]; then
+	title="PICARD DEDUPLICATION"
+else
+	title="UMI-tools DEDUPLICATION"
+fi
+
+call="multiqc -f --title '$title' --filename multiqc_report_dedup --outdir report_dir $dedupdir"
 echo $call
 eval $call
 

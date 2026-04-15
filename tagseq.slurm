@@ -66,7 +66,7 @@ if [ $dorrna == "y" ]; then
           -U $R1 | \
         hts_SeqScreener -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'screen phix' | \
         hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json -s $rrnafile -N 'screen rRNA' | \
-        hts_ExtractUMI | \
+        hts_ExtractUMI -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'extract UMIS' | \
         hts_CutTrim -a 4 -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim first 16 bases' | \
         hts_AdapterTrimmer -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim adapters' | \
         hts_PolyATTrim --no-left --skip_polyT -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove polyA' | \
@@ -82,7 +82,7 @@ else
     call="hts_Stats -L ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'initial stats' \
           -U $R1 | \
         hts_SeqScreener -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'screen phix' | \
-        hts_ExtractUMI | \
+        hts_ExtractUMI -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'extract UMIs' | \
         hts_CutTrim -a 4 -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim first 16 bases' | \
         hts_AdapterTrimmer -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim adapters' | \
         hts_PolyATTrim --no-left --skip_polyT -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove polyA' | \
