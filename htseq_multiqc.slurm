@@ -17,6 +17,7 @@ fastpdir=$3
 htsdir=$4
 stardir=$5
 dedupdir=$6
+tag_or_rna=$7
 
 
 source /etc/profile.d/modules.sh
@@ -46,13 +47,15 @@ call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c
 echo $call
 eval $call
 
-# get sample names for header
-\ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.ALL.counts.tsv
+if [[ $tag_or_rna == "rna" ]]; then
+	# get sample names for header
+	\ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.ALL.counts.tsv
 
-call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.Aligned.sortedByCoord.out.bam $stargtf"
+	call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.Aligned.sortedByCoord.out.bam $stargtf"
 
-echo $call
-eval $call
+	echo $call
+	eval $call
+fi
 
 end=`date +%s`
 runtime=$((end-start))
@@ -68,7 +71,7 @@ start=`date +%s`
 echo "Creating MDS plots..."
 module load R/4.4.2
 
-call="Rscript mds.R"
+call="Rscript mds.R $tag_or_rna"
 echo $call
 eval $call
 
@@ -109,7 +112,14 @@ eval $call
 echo -e "$fastpdir\n$htsdir\n$stardir\n$dedupdir" > mqc.dirlist.txt
 
 echo Creating PDF report...
-call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"
+
+if [[ $tag_or_rna == "rna" ]]; then
+	title="UCD Bioinformatics Core RNA-Seq Report"
+else
+	title="UCD Bioinformatics Core TAG-Seq Report"
+fi
+
+call="multiqc --pdf -f --title '$title' --filename final_report_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"
 echo $call
 eval $call
 

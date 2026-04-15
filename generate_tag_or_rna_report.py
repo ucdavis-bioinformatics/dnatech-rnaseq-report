@@ -165,12 +165,12 @@ print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
     os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
-    os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
+    os.system(f"cp biocore_banner.png final_report_rnaseq.html mds_plots.html {outputdir}/report_dir/")
     analysis_script = "rnaseq_pe.slurm"
 
 else:
     os.system(f"cp tagseq.slurm htseq_multiqc.slurm mds.R multiqc_config_pdf.yaml {outputdir}")
-    os.system(f"cp biocore_banner.png final_report.html mds_plots.html {outputdir}/report_dir/")
+    os.system(f"cp biocore_banner.png final_report_tagseq.html mds_plots.html {outputdir}/report_dir/")
     analysis_script = "tagseq.slurm"
 
 if mhcheck == "n":
@@ -212,8 +212,8 @@ batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.deco
 print(f"Array Job ID: {batch_jobid}")
 
 # submit htseq-count and multiqc job to run after array job finishes
-print(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}")
-subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}", shell=True)
+print(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}")
+subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}", shell=True)
 
 
 print("Done submitting. Now you must wait.")
