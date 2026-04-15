@@ -114,12 +114,11 @@ echo -e "$fastpdir\n$htsdir\n$stardir\n$dedupdir" > mqc.dirlist.txt
 echo Creating PDF report...
 
 if [[ $tag_or_rna == "rna" ]]; then
-	title="UCD Bioinformatics Core RNA-Seq Report"
+	call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report_rnaseq_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_rnaseq_pdf.yaml"
 else
-	title="UCD Bioinformatics Core TAG-Seq Report"
+	call="multiqc --pdf -f --title 'UCD Bioinformatics Core TAG-Seq Report' --filename final_report_tagseq_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_tagseq_pdf.yaml"
 fi
 
-call="multiqc --pdf -f --title '$title' --filename final_report_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_pdf.yaml"
 echo $call
 eval $call
 

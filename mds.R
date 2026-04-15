@@ -1,10 +1,10 @@
 args <- commandArgs(trailingOnly = TRUE)
-rna_or_tag = args[1]
+tag_or_rna = args[1]
 
 
 library(edgeR)
 
-if (rna_or_tag == "rna") {
+if (tag_or_rna == "rna") {
 	counts <- read.table("report_dir/htseq.ALL.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
 
 	dge <- DGEList(counts=counts)
