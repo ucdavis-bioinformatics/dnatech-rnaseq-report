@@ -159,11 +159,10 @@ if runcheck == "n":
     sys.exit(1)
 
 
-if not os.path.exists(outputdir):
-    print("Creating output directory...")
-    os.system(f"mkdir -p {outputdir}")
-    os.system(f"mkdir -p {outputdir}/slurmout")
-    os.system(f"mkdir -p {outputdir}/report_dir")
+print("Creating output directory...")
+os.system(f"mkdir -p {outputdir}")
+os.system(f"mkdir -p {outputdir}/slurmout")
+os.system(f"mkdir -p {outputdir}/report_dir")
 
 
 print("Copying scripts, templates, and config...")
