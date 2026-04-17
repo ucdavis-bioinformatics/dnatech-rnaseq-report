@@ -34,6 +34,7 @@ while True:
 while True:
     inputdir = input("Path to fastq file directory: ")
     if os.access(inputdir, os.R_OK) and os.path.exists(inputdir):
+        inputdir = os.path.abspath(inputdir)
         break
     else:
         print("Path does not exist or you do not have read permission. Try again.")
@@ -84,7 +85,8 @@ if sampidcheck == "n":
 
 while True:
     outputdir = input("\nPath to new output directory: ")
-    if os.access(os.path.dirname(outputdir), os.W_OK) and not os.path.exists(outputdir):
+    if os.access(os.path.dirname(outputdir) or ".", os.W_OK) and not os.path.exists(outputdir):
+        outputdir = os.path.abspath(outputdir)
         break
     else:
         print("Path exists or you do not have write access to that path. Choose a new path.")
@@ -108,6 +110,7 @@ else:
     while True:
         star_fasta = input("\nPath to reference fasta file: ")
         if os.access(star_fasta, os.R_OK) and os.path.exists(star_fasta):
+            star_fasta = os.path.abspath(star_fasta)
             break
         else:
             print("File does not exist or you do not have read permission. Try again.")
@@ -115,6 +118,7 @@ else:
     while True:
         star_gtf = input("\nPath to annotation file (GTF format): ")
         if os.access(star_gtf, os.R_OK) and os.path.exists(star_gtf):
+            star_gtf = os.path.abspath(star_gtf)
             break
         else:
             print("File does not exist or you do not have read permission. Try again.")
@@ -136,6 +140,7 @@ if (rrna_check == "y"):
         while True:
             rrna_fasta = input("Path to rRNA FASTA file: ")
             if os.access(rrna_fasta, os.R_OK) and os.path.exists(rrna_fasta):
+                rrna_fasta = os.path.abspath(rrna_fasta)
                 break
             else:
                 print("File does not exist or you do not have read permission. Try again.")
@@ -164,17 +169,17 @@ if not os.path.exists(outputdir):
 print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
-    os.system(f"cp rnaseq_pe.slurm htseq_multiqc.slurm mds.R multiqc_config_rnaseq_pdf.yaml {outputdir}")
-    os.system(f"cp biocore_banner.png final_report_rnaseq.html mds_plots_rnaseq.html {outputdir}/report_dir/")
+    os.system(f"cp {INSTALL_DIR}/rnaseq_pe.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {INSTALL_DIR}/multiqc_config_rnaseq_pdf.yaml {outputdir}")
+    os.system(f"cp {INSTALL_DIR}/biocore_banner.png {INSTALL_DIR}/final_report_rnaseq.html {INSTALL_DIR}/mds_plots_rnaseq.html {outputdir}/report_dir/")
     analysis_script = "rnaseq_pe.slurm"
 
 else:
-    os.system(f"cp tagseq.slurm htseq_multiqc.slurm mds.R multiqc_config_tagseq_pdf.yaml {outputdir}")
-    os.system(f"cp biocore_banner.png final_report_tagseq.html mds_plot_tagseq.html {outputdir}/report_dir/")
+    os.system(f"cp {INSTALL_DIR}/tagseq.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {INSTALL_DIR}/multiqc_config_tagseq_pdf.yaml {outputdir}")
+    os.system(f"cp {INSTALL_DIR}/biocore_banner.png {INSTALL_DIR}/final_report_tagseq.html {INSTALL_DIR}/mds_plot_tagseq.html {outputdir}/report_dir/")
     analysis_script = "tagseq.slurm"
 
 if mhcheck == "n":
-    os.system(f"cp star_index_create.slurm {outputdir}")
+    os.system(f"cp {INSTALL_DIR}/star_index_create.slurm {outputdir}")
 
 print("Creating sample info file...")
 if tag_or_rna == "rna":
