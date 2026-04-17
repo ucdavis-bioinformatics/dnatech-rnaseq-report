@@ -30,6 +30,7 @@ R2=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f3`
 echo "Sample: $SAMPLE"
 
 source /etc/profile.d/modules.sh
+module use /quobyte/bioinfocore-grp/modules
 
 ############### fastp
 start=`date +%s`
