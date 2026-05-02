@@ -168,13 +168,15 @@ os.system(f"mkdir -p {outputdir}/report_dir")
 print("Copying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
-    os.system(f"cp {INSTALL_DIR}/rnaseq_pe.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {INSTALL_DIR}/multiqc_config_rnaseq_pdf.yaml {outputdir}")
+    os.system(f"cp {INSTALL_DIR}/rnaseq_pe.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {outputdir}")
     os.system(f"cp {INSTALL_DIR}/biocore_banner.png {INSTALL_DIR}/final_report_rnaseq.html {INSTALL_DIR}/mds_plots_rnaseq.html {outputdir}/report_dir/")
+    # os.system(f"cp {INSTALL_DIR}/multiqc_config_rnaseq_pdf.yaml {outputdir}")
     analysis_script = "rnaseq_pe.slurm"
 
 else:
-    os.system(f"cp {INSTALL_DIR}/tagseq.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {INSTALL_DIR}/multiqc_config_tagseq_pdf.yaml {outputdir}")
-    os.system(f"cp {INSTALL_DIR}/biocore_banner.png {INSTALL_DIR}/final_report_tagseq.html {INSTALL_DIR}/mds_plot_tagseq.html {outputdir}/report_dir/")
+    os.system(f"cp {INSTALL_DIR}/tagseq.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {outputdir}")
+    os.system(f"cp {INSTALL_DIR}/biocore_banner.png {INSTALL_DIR}/final_report_tagseq.html {INSTALL_DIR}/mds_plots_tagseq.html {outputdir}/report_dir/")
+    # os.system(f"cp {INSTALL_DIR}/multiqc_config_tagseq_pdf.yaml {outputdir}")
     analysis_script = "tagseq.slurm"
 
 if mhcheck == "n":

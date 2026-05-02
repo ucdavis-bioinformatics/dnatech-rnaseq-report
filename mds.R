@@ -4,24 +4,24 @@ tag_or_rna = args[1]
 
 library(edgeR)
 
-if (tag_or_rna == "rna") {
-	counts <- read.table("report_dir/htseq.ALL.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
 
-	dge <- DGEList(counts=counts)
+counts <- read.table("report_dir/htseq.ALL.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
 
-	# normalize
-	dge <- calcNormFactors(dge)
+dge <- DGEList(counts=counts)
 
-	pdf("report_dir/mds_all.pdf")
-	# MDS plot
-	plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
-	dev.off()
+# normalize
+dge <- calcNormFactors(dge)
 
-	png("report_dir/mds_all.png")
-	# MDS plot
-	plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
-	dev.off()
-}
+# pdf("report_dir/mds_all.pdf")
+# # MDS plot
+# plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
+# dev.off()
+
+png("report_dir/mds_all.png")
+# MDS plot
+plotMDS(dge, main="Multi-Dimensional Scaling Plot for all counts")
+dev.off()
+
 
 
 counts <- read.table("report_dir/htseq.dedup.counts.tsv", header=TRUE, row.names=1, check.names=FALSE)
@@ -31,10 +31,10 @@ dge <- DGEList(counts=counts)
 # normalize
 dge <- calcNormFactors(dge)
 
-pdf("report_dir/mds_dedup.pdf")
-# MDS plot
-plotMDS(dge, main="Multi-Dimensional Scaling Plot for deduplicated counts")
-dev.off()
+# pdf("report_dir/mds_dedup.pdf")
+# # MDS plot
+# plotMDS(dge, main="Multi-Dimensional Scaling Plot for deduplicated counts")
+# dev.off()
 
 png("report_dir/mds_dedup.png")
 # MDS plot

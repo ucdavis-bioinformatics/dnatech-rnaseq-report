@@ -70,7 +70,7 @@ if [ $dorrna == "y" ]; then
       hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json -s $rrnafile | \
       hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
       hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
-      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_LengthFilter -m 30 -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
       hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.json"
 else
 
@@ -78,7 +78,7 @@ else
       hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
       hts_AdapterTrimmer -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
       hts_QWindowTrim -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
-      hts_LengthFilter -m 50 -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
+      hts_LengthFilter -m 30 -A $htsdir/$SAMPLE/$SAMPLE.stats.json | \
       hts_Stats -F -f $htsdir/$SAMPLE/$SAMPLE.cleaned -A $htsdir/$SAMPLE/$SAMPLE.stats.json"
 fi
 

@@ -68,13 +68,13 @@ if [ $dorrna == "y" ]; then
         hts_SeqScreener -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'screen phix' | \
         hts_SeqScreener -A $htsdir/$SAMPLE/$SAMPLE.stats.json -s $rrnafile -N 'screen rRNA' | \
         hts_ExtractUMI -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'extract UMIS' | \
-        hts_CutTrim -a 4 -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim first 16 bases' | \
+        hts_CutTrim -a 16 -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim first 16 bases' | \
         hts_AdapterTrimmer -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim adapters' | \
         hts_PolyATTrim --no-left --skip_polyT -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove polyA' | \
         hts_QWindowTrim -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'quality trim the ends of reads' | \
         hts_NTrimmer -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove any remaining N bases' | \
-        hts_LengthFilter -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove reads < 50 bp' \
-        -n -m 50 | \
+        hts_LengthFilter -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove reads < 30 bp' \
+        -n -m 30 | \
         hts_Stats -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'final stats' \
         -f ${htsdir}/${SAMPLE}/${SAMPLE}.cleaned"
 
@@ -84,13 +84,13 @@ else
           -U $R1 | \
         hts_SeqScreener -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'screen phix' | \
         hts_ExtractUMI -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'extract UMIs' | \
-        hts_CutTrim -a 4 -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim first 16 bases' | \
+        hts_CutTrim -a 16 -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim first 16 bases' | \
         hts_AdapterTrimmer -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'trim adapters' | \
         hts_PolyATTrim --no-left --skip_polyT -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove polyA' | \
         hts_QWindowTrim -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'quality trim the ends of reads' | \
         hts_NTrimmer -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove any remaining N bases' | \
-        hts_LengthFilter -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove reads < 50 bp' \
-        -n -m 50 | \
+        hts_LengthFilter -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'remove reads < 30 bp' \
+        -n -m 30 | \
         hts_Stats -A ${htsdir}/${SAMPLE}/${SAMPLE}.stats.json -N 'final stats' \
         -f ${htsdir}/${SAMPLE}/${SAMPLE}.cleaned"
 

@@ -90,11 +90,11 @@ echo "Creating HTML and PDF reports..."
 
 module load bioinfo/multiqc/1.33
 
-call="multiqc -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
+call="multiqc --no-data-dir -f --title 'RAW READS' --filename multiqc_report_raw --outdir report_dir $fastpdir"
 echo $call
 eval $call
 
-call="multiqc -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir report_dir $stardir"
+call="multiqc --no-data-dir -f --title 'STAR ALIGNMENT' --filename multiqc_report_star --outdir report_dir $stardir"
 echo $call
 eval $call
 
@@ -104,29 +104,29 @@ else
 	title="UMI-tools DEDUPLICATION"
 fi
 
-call="multiqc -f --title '$title' --filename multiqc_report_dedup --outdir report_dir $dedupdir"
+call="multiqc --no-data-dir -f --title '$title' --filename multiqc_report_dedup --outdir report_dir $dedupdir"
 echo $call
 eval $call
 
 module unload bioinfo/multiqc/1.33
 module load bioinfo/multiqc/htstream.1.13.dev0_beta
 
-call="multiqc -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir report_dir $htsdir"
+call="multiqc --no-data-dir -f --title 'HTSTREAM PREPROCESSING' --filename multiqc_report_htstream --outdir report_dir $htsdir"
 echo $call
 eval $call
 
-echo -e "$fastpdir\n$htsdir\n$stardir\n$dedupdir" > mqc.dirlist.txt
+# echo -e "$fastpdir\n$htsdir\n$stardir\n$dedupdir" > mqc.dirlist.txt
 
-echo Creating PDF report...
+# echo Creating PDF report...
 
-if [[ $tag_or_rna == "rna" ]]; then
-	call="multiqc --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report_rnaseq_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_rnaseq_pdf.yaml"
-else
-	call="multiqc --pdf -f --title 'UCD Bioinformatics Core TAG-Seq Report' --filename final_report_tagseq_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_tagseq_pdf.yaml"
-fi
+# if [[ $tag_or_rna == "rna" ]]; then
+# 	call="multiqc --no-data-dir --pdf -f --title 'UCD Bioinformatics Core RNA-Seq Report' --filename final_report_rnaseq_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_rnaseq_pdf.yaml"
+# else
+# 	call="multiqc --no-data-dir --pdf -f --title 'UCD Bioinformatics Core TAG-Seq Report' --filename final_report_tagseq_pdf --outdir report_dir -l mqc.dirlist.txt -c multiqc_config_tagseq_pdf.yaml"
+# fi
 
-echo $call
-eval $call
+# echo $call
+# eval $call
 
 module unload bioinfo/multiqc/htstream.1.13.dev0_beta
 
