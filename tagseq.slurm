@@ -11,7 +11,6 @@
 #SBATCH --error=slurmout/tagseq_%A_%a.out
 
 
-hostname
 sampfile=$1
 starref=$2
 stargtf=$3
@@ -21,6 +20,8 @@ fastpdir=$6
 htsdir=$7
 stardir=$8
 dedupdir=$9
+
+echo Compute Node: `hostname`
 
 
 SAMPLE=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f1`

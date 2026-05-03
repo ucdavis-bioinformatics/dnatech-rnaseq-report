@@ -24,7 +24,7 @@ readline.set_completer_delims(' \t\n=')
 readline.parse_and_bind("tab:complete")
 
 while True:
-    tag_or_rna = input("RNA-Seq or TAG-Seq (rna/tag)? ")
+    tag_or_rna = input("\nRNA-Seq or TAG-Seq (rna/tag)? ")
     if tag_or_rna == "rna" or tag_or_rna == "tag":
         break
     else:

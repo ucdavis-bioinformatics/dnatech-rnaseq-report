@@ -11,7 +11,6 @@
 #SBATCH --error=slurmout/rnaseq_pe_%A_%a.out
 
 
-hostname
 sampfile=$1
 starref=$2
 stargtf=$3
@@ -22,6 +21,7 @@ htsdir=$7
 stardir=$8
 dedupdir=$9
 
+echo Compute Node: `hostname`
 
 SAMPLE=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f1`
 R1=`head -n ${SLURM_ARRAY_TASK_ID} $sampfile | tail -1 | cut -f2`
@@ -138,19 +138,19 @@ start=`date +%s`
 
 echo "Running picard (removing duplicates)..."
 
-mkdir -p $depdupdir/$SAMPLE
+mkdir -p $dedupdir/$SAMPLE
 
 BAMFILE="$stardir/$SAMPLE/${SAMPLE}.Aligned.sortedByCoord.out.bam"
 
 module load picard/3.1.1
 
-call="picard MarkDuplicates --REMOVE_DUPLICATES true --INPUT $BAMFILE --METRICS_FILE $depdupdir/$SAMPLE/$SAMPLE.picard.metrics --OUTPUT $depdupdir/$SAMPLE/$SAMPLE.remdup.bam"
+call="picard MarkDuplicates --REMOVE_DUPLICATES true --INPUT $BAMFILE --METRICS_FILE $dedupdir/$SAMPLE/$SAMPLE.picard.metrics --OUTPUT $dedupdir/$SAMPLE/$SAMPLE.remdup.bam"
 
 echo $call
 eval $call
 
 module load samtools/1.19.2
-call="samtools index --threads $SLURM_CPUS_PER_TASK $depdupdir/$SAMPLE/$SAMPLE.remdup.bam"
+call="samtools index --threads $SLURM_CPUS_PER_TASK $dedupdir/$SAMPLE/$SAMPLE.remdup.bam"
 echo $call
 eval $call
 
