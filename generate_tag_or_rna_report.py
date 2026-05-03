@@ -159,13 +159,13 @@ if runcheck == "n":
     sys.exit(1)
 
 
-print("Creating output directory...")
+print("\nCreating output directory...")
 os.system(f"mkdir -p {outputdir}")
 os.system(f"mkdir -p {outputdir}/slurmout")
 os.system(f"mkdir -p {outputdir}/report_dir")
 
 
-print("Copying scripts, templates, and config...")
+print("\nCopying scripts, templates, and config...")
 if tag_or_rna == "rna":
 
     os.system(f"cp {INSTALL_DIR}/rnaseq_pe.slurm {INSTALL_DIR}/htseq_multiqc.slurm {INSTALL_DIR}/mds.R {outputdir}")
@@ -182,7 +182,7 @@ else:
 if mhcheck == "n":
     os.system(f"cp {INSTALL_DIR}/star_index_create.slurm {outputdir}")
 
-print("Creating sample info file...")
+print("\nCreating sample info file...")
 if tag_or_rna == "rna":
     with open(f"{outputdir}/{SAMPLE_FILE}", 'w') as file:
         for index,sampid in enumerate(sample_ids):
@@ -194,7 +194,7 @@ else:
 
 os.chdir(outputdir)
 
-print("Submitting slurm array script for all samples...")
+print("\nSubmitting slurm array script for all samples...")
 
 index_dep=""
 # if we need to make a custom star index
@@ -203,14 +203,14 @@ if mhcheck == "n":
     star_index_dir = "star_index"
     os.system(f"mkdir {star_index_dir}")
 
-    print(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}")
+    print(f"\nsbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}")
     sbatch_output = subprocess.run(f"sbatch star_index_create.slurm {star_fasta} {star_gtf} {star_index_dir} {readlen-1}", shell=True, capture_output=True)
     batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.decode('utf-8')).group(1)
     index_dep = f"--dependency=afterok:{batch_jobid}"
 
 
 # submit rna or tag seq job
-print(f"sbatch {index_dep} --array=1-{len(sample_ids)} {analysis_script} {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}")
+print(f"\nsbatch {index_dep} --array=1-{len(sample_ids)} {analysis_script} {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}")
 sbatch_output = subprocess.run(f"sbatch {index_dep} --array=1-{len(sample_ids)} {analysis_script} {SAMPLE_FILE} {star_index_dir} {star_gtf} {rrna_check} {rrna_fasta} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR}", shell=True, capture_output=True)
 
 #print(sbatch_output.stdout)
@@ -218,8 +218,8 @@ batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.deco
 print(f"Array Job ID: {batch_jobid}")
 
 # submit htseq-count and multiqc job to run after array job finishes
-print(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}")
+print(f"\nsbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}")
 subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}", shell=True)
 
 
-print("Done submitting. Now you must wait.")
+print("\nDone submitting. Now you must wait.")
