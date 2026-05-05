@@ -1,5 +1,3 @@
-INSTALL_DIR="/quobyte/bioinfocore-grp/najoshi/projects/rnaseq_report/dnatech-rnaseq-report"
-
 STAR_INDEX_HUMAN_DIR="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/STAR_2.7.11b_index"
 STAR_GTF_HUMAN_FILE="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.gtf"
 RRNA_HUMAN_FILE="/quobyte/bioinfocore-grp/genomes/human/GRCh38.p14/rRNA_human_03-12-2026.fasta"

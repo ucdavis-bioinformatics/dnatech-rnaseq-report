@@ -19,6 +19,7 @@ hm_data = {"human" : {"star_index_dir" : STAR_INDEX_HUMAN_DIR,
             }
 } 
 
+INSTALL_DIR = os.path.dirname(os.path.realpath(__file__))
 
 readline.set_completer_delims(' \t\n=')
 readline.parse_and_bind("tab:complete")
