@@ -47,15 +47,15 @@ call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c
 echo $call
 eval $call
 
-if [[ $tag_or_rna == "rna" ]]; then
-	# get sample names for header
-	\ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.ALL.counts.tsv
 
-	call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.Aligned.sortedByCoord.out.bam $stargtf"
+# get sample names for header
+\ls -1 $stardir | paste -s -d$'\t' > report_dir/htseq.ALL.counts.tsv
 
-	echo $call
-	eval $call
-fi
+call="htseq-count -n $SLURM_CPUS_PER_TASK --append-output -r pos -s $stranded -c report_dir/htseq.ALL.counts.tsv $stardir/*/*.Aligned.sortedByCoord.out.bam $stargtf"
+
+echo $call
+eval $call
+
 
 end=`date +%s`
 runtime=$((end-start))
