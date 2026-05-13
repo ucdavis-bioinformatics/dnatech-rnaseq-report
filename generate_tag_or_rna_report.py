@@ -6,6 +6,7 @@ import re
 import sys
 import subprocess
 import gzip
+import time
 from config import *
 
 hm_data = {"human" : {"star_index_dir" : STAR_INDEX_HUMAN_DIR,
@@ -33,7 +34,7 @@ while True:
 
 
 while True:
-    inputdir = input("Path to fastq file directory: ")
+    inputdir = input("\nPath to fastq file directory: ")
     if os.access(inputdir, os.R_OK) and os.path.exists(inputdir):
         inputdir = os.path.abspath(inputdir)
         break
@@ -44,26 +45,26 @@ while True:
 input_files_R1 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R1.*.fastq.gz', f)]
 input_files_R1.sort()
 
-print("Input files:\n", input_files_R1)
+print("\nInput files:\n", input_files_R1)
 
 if tag_or_rna == "rna":
     input_files_R2 = [f for f in os.listdir(inputdir) if re.match(r'^(?!.*Undetermined).*R2.*.fastq.gz', f)]
     input_files_R2.sort()
 
-    print(input_files_R2, "\n")
+    print("\n", input_files_R2, "\n")
 
 # find length of reads
 with gzip.open(f"{inputdir}/{input_files_R1[0]}", 'rb') as file:
     file.readline() # header line
     readlen = len(file.readline().strip())
 
-print(f"Read Length: {readlen}")
+print(f"\nRead Length: {readlen}")
 
 
 if tag_or_rna == "rna":
     sample_ids = [re.search(r'^(.+)_S\d+_L\d+_R\d_\d+.fastq.gz', s).group(1) for s in input_files_R1]
 else:
-    sample_ids = [re.search(r'^(.+)_TAG\d+_S\d+_L\d+_R\d_\d+.fastq.gz', s).group(1) for s in input_files_R1]
+    sample_ids = [re.search(r'^(.+)_TAG\d+_R1.fastq.gz', s).group(1) for s in input_files_R1]
 
 # get unique ids
 sample_ids = list(set(sample_ids))
@@ -71,8 +72,11 @@ sample_ids.sort()
 
 print("Sample IDs:\n", sample_ids, "\n")
 
+project_name = os.path.basename(inputdir)
+print("Project Name:", project_name, "\n")
+
 while True:
-    sampidcheck = input("Are these sample IDs and files correct (y/n)? ")
+    sampidcheck = input("Are these sample IDs, files, and project name correct (y/n)? ")
     if sampidcheck == "y" or sampidcheck == "n":
         break
     else:
@@ -82,15 +86,6 @@ while True:
 if sampidcheck == "n":
     print("Exiting.")
     sys.exit(1)
-
-
-while True:
-    outputdir = input("\nPath to new output directory: ")
-    if os.access(os.path.dirname(outputdir) or ".", os.W_OK) and not os.path.exists(outputdir):
-        outputdir = os.path.abspath(outputdir)
-        break
-    else:
-        print("Path exists or you do not have write access to that path. Choose a new path.")
 
 
 while True:
@@ -160,7 +155,10 @@ if runcheck == "n":
     sys.exit(1)
 
 
-print("\nCreating output directory...")
+print("\nCreating temp output directory...")
+timestr = time.strftime("%Y-%m-%d_%H%M%S")
+outputdir = f"{TEMP_ANALYSIS_BASEDIR}/{project_name}.{timestr}"
+print(outputdir)
 os.system(f"mkdir -p {outputdir}")
 os.system(f"mkdir -p {outputdir}/slurmout")
 os.system(f"mkdir -p {outputdir}/report_dir")
@@ -219,8 +217,8 @@ batch_jobid = re.search(r'^Submitted batch job (\d+)', sbatch_output.stdout.deco
 print(f"Array Job ID: {batch_jobid}")
 
 # submit htseq-count and multiqc job to run after array job finishes
-print(f"\nsbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}")
-subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna}", shell=True)
+print(f"\nsbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna} {inputdir}")
+subprocess.run(f"sbatch --dependency=afterok:{batch_jobid} htseq_multiqc.slurm {SAMPLE_FILE} {star_gtf} {FASTP_DIR} {HTS_DIR} {STAR_DIR} {DEDUP_DIR} {tag_or_rna} {inputdir}", shell=True)
 
 
 print("\nDone submitting. Now you must wait.")

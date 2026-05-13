@@ -18,6 +18,7 @@ htsdir=$4
 stardir=$5
 dedupdir=$6
 tag_or_rna=$7
+inputdir=$8
 
 
 source /etc/profile.d/modules.sh
@@ -133,6 +134,10 @@ module unload bioinfo/multiqc/htstream.1.13.dev0_beta
 end=`date +%s`
 runtime=$((end-start))
 echo Report creation runtime: $runtime seconds
+
+echo Copying final report directory to $inputdir.
+# copy report dir back to the input directory (which is also the output directory)
+cp -r report_dir $inputdir
 
 ############################################
 

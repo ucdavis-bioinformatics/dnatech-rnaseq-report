@@ -12,3 +12,5 @@ FASTP_DIR="00-FastP"
 HTS_DIR="01-HTStream"
 STAR_DIR="02-STAR"
 DEDUP_DIR="03-dedup"
+
+TEMP_ANALYSIS_BASEDIR="/quobyte/dnatech-grp/report_temp_dir"
